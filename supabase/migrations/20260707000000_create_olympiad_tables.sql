@@ -36,6 +36,11 @@ on olympiad_registrations
 for select 
 using (true);
 
+create policy "Acesso público para exclusão de inscrições" 
+on olympiad_registrations 
+for delete 
+using (true);
+
 create policy "Acesso público para gerenciar configurações" 
 on olympiad_settings 
 for all 
