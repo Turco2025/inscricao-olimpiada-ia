@@ -170,14 +170,14 @@ export default function AdminDashboard() {
     doc.setFontSize(9);
     doc.setTextColor(51, 65, 85);
     
-    // Posições das Colunas no PDF (Horizontal / Landscape - Espaço Expandido)
+    // Posições das Colunas no PDF (Ajustadas sob demanda do usuário)
     const colOrder = margin + 2;       // 17
-    const colName = margin + 15;       // 30 (largura disponível: 70mm)
-    const colEmail = margin + 85;      // 100 (largura disponível: 65mm)
-    const colYear = margin + 150;      // 165 (largura disponível: 45mm)
-    const colClass = margin + 195;     // 210 (largura disponível: 18mm)
-    const colPhone = margin + 213;     // 228 (largura disponível: 27mm)
-    const colDateTime = margin + 240;  // 255 (largura disponível: 27mm)
+    const colName = margin + 15;       // 30 (largura disponível: 55mm)
+    const colEmail = margin + 70;      // 85 (largura disponível: 50mm)
+    const colYear = margin + 120;      // 135 (largura disponível: 40mm)
+    const colClass = margin + 160;     // 175 (largura disponível: 30mm)
+    const colPhone = margin + 190;     // 205 (largura disponível: 35mm)
+    const colDateTime = margin + 225;  // 240 (largura disponível: 42mm)
 
     doc.text("Ordem", colOrder, y + 5.5);
     doc.text("Nome Completo", colName, y + 5.5);
@@ -250,24 +250,24 @@ export default function AdminDashboard() {
       doc.text(orderStr, colOrder, y + 5);
       doc.setFont("helvetica", "normal");
 
-      // Trunca nomes muito longos para caber no PDF (Limites maiores na horizontal)
+      // Trunca nomes muito longos para caber no PDF
       let nameText = reg.full_name;
-      if (nameText.length > 38) {
-        nameText = nameText.substring(0, 35) + "...";
+      if (nameText.length > 30) {
+        nameText = nameText.substring(0, 27) + "...";
       }
 
       doc.text(nameText, colName, y + 5);
 
-      // Trunca emails muito longos (Limites maiores na horizontal)
+      // Trunca emails muito longos
       let emailText = reg.email || "";
-      if (emailText.length > 32) {
-        emailText = emailText.substring(0, 29) + "...";
+      if (emailText.length > 28) {
+        emailText = emailText.substring(0, 25) + "...";
       }
       doc.text(emailText, colEmail, y + 5);
       
       let yearText = reg.school_year;
-      if (yearText.length > 25) {
-        yearText = yearText.substring(0, 22) + "...";
+      if (yearText.length > 22) {
+        yearText = yearText.substring(0, 19) + "...";
       }
       doc.text(yearText, colYear, y + 5);
       doc.text(reg.class_name, colClass, y + 5);
