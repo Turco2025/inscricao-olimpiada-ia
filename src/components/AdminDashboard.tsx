@@ -170,13 +170,14 @@ export default function AdminDashboard() {
     doc.setFontSize(9);
     doc.setTextColor(51, 65, 85);
     
-    // Posições das Colunas no PDF
-    const colOrder = margin + 2;
+    // Posições das Colunas no PDF (Ajustadas para caber a Data/Hora)
+    const colOrder = margin + 1;
     const colName = margin + 12;
-    const colEmail = margin + 65;
-    const colYear = margin + 108;
-    const colClass = margin + 140;
-    const colPhone = margin + 157;
+    const colEmail = margin + 55;
+    const colYear = margin + 93;
+    const colClass = margin + 120;
+    const colPhone = margin + 132;
+    const colDateTime = margin + 155;
 
     doc.text("Ordem", colOrder, y + 5.5);
     doc.text("Nome Completo", colName, y + 5.5);
@@ -184,6 +185,7 @@ export default function AdminDashboard() {
     doc.text("Ano Escolar", colYear, y + 5.5);
     doc.text("Turma", colClass, y + 5.5);
     doc.text("Telefone", colPhone, y + 5.5);
+    doc.text("Data/Hora", colDateTime, y + 5.5);
     
     y += 8; // Avança depois do header
 
@@ -222,6 +224,7 @@ export default function AdminDashboard() {
         doc.text("Ano Escolar", colYear, y + 5.5);
         doc.text("Turma", colClass, y + 5.5);
         doc.text("Telefone", colPhone, y + 5.5);
+        doc.text("Data/Hora", colDateTime, y + 5.5);
         
         y += 8;
         doc.setFont("helvetica", "normal");
@@ -249,26 +252,38 @@ export default function AdminDashboard() {
 
       // Trunca nomes muito longos para caber no PDF
       let nameText = reg.full_name;
-      if (nameText.length > 25) {
-        nameText = nameText.substring(0, 22) + "...";
+      if (nameText.length > 22) {
+        nameText = nameText.substring(0, 19) + "...";
       }
 
       doc.text(nameText, colName, y + 5);
 
       // Trunca emails muito longos
       let emailText = reg.email || "";
-      if (emailText.length > 22) {
-        emailText = emailText.substring(0, 19) + "...";
+      if (emailText.length > 20) {
+        emailText = emailText.substring(0, 17) + "...";
       }
       doc.text(emailText, colEmail, y + 5);
       
       let yearText = reg.school_year;
-      if (yearText.length > 18) {
-        yearText = yearText.substring(0, 15) + "...";
+      if (yearText.length > 16) {
+        yearText = yearText.substring(0, 13) + "...";
       }
       doc.text(yearText, colYear, y + 5);
       doc.text(reg.class_name, colClass, y + 5);
       doc.text(reg.phone, colPhone, y + 5);
+
+      // Formata data e hora da inscrição de forma compacta (ex: DD/MM/AA, HH:MM)
+      const formattedDate = reg.created_at
+        ? new Date(reg.created_at).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          })
+        : "-";
+      doc.text(formattedDate, colDateTime, y + 5);
 
       y += 7.5;
     });
