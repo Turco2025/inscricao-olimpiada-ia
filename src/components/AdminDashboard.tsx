@@ -92,6 +92,7 @@ export default function AdminDashboard() {
   const filteredRegistrations = registrations.filter(reg => {
     const matchesSearch = 
       reg.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (reg.email && reg.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
       reg.class_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       reg.phone.includes(searchQuery);
       
@@ -165,13 +166,15 @@ export default function AdminDashboard() {
     
     // Posições das Colunas no PDF
     const colOrder = margin + 2;
-    const colName = margin + 15;
-    const colYear = margin + 80;
-    const colClass = margin + 130;
-    const colPhone = margin + 152;
+    const colName = margin + 12;
+    const colEmail = margin + 65;
+    const colYear = margin + 108;
+    const colClass = margin + 140;
+    const colPhone = margin + 157;
 
     doc.text("Ordem", colOrder, y + 5.5);
     doc.text("Nome Completo", colName, y + 5.5);
+    doc.text("E-mail", colEmail, y + 5.5);
     doc.text("Ano Escolar", colYear, y + 5.5);
     doc.text("Turma", colClass, y + 5.5);
     doc.text("Telefone", colPhone, y + 5.5);
@@ -209,6 +212,7 @@ export default function AdminDashboard() {
         doc.setTextColor(51, 65, 85);
         doc.text("Ordem", colOrder, y + 5.5);
         doc.text("Nome Completo", colName, y + 5.5);
+        doc.text("E-mail", colEmail, y + 5.5);
         doc.text("Ano Escolar", colYear, y + 5.5);
         doc.text("Turma", colClass, y + 5.5);
         doc.text("Telefone", colPhone, y + 5.5);
@@ -239,15 +243,22 @@ export default function AdminDashboard() {
 
       // Trunca nomes muito longos para caber no PDF
       let nameText = reg.full_name;
-      if (nameText.length > 32) {
-        nameText = nameText.substring(0, 29) + "...";
+      if (nameText.length > 25) {
+        nameText = nameText.substring(0, 22) + "...";
       }
 
       doc.text(nameText, colName, y + 5);
+
+      // Trunca emails muito longos
+      let emailText = reg.email || "";
+      if (emailText.length > 22) {
+        emailText = emailText.substring(0, 19) + "...";
+      }
+      doc.text(emailText, colEmail, y + 5);
       
       let yearText = reg.school_year;
-      if (yearText.length > 24) {
-        yearText = yearText.substring(0, 21) + "...";
+      if (yearText.length > 18) {
+        yearText = yearText.substring(0, 15) + "...";
       }
       doc.text(yearText, colYear, y + 5);
       doc.text(reg.class_name, colClass, y + 5);
@@ -440,7 +451,7 @@ export default function AdminDashboard() {
             <div style={{ position: "relative", flexGrow: 1 }}>
               <input
                 type="text"
-                placeholder="Buscar por nome, turma ou telefone..."
+                placeholder="Buscar por nome, e-mail, turma ou telefone..."
                 className="form-input"
                 style={{ paddingLeft: 44, paddingRight: 16, marginBottom: 0, height: 48 }}
                 value={searchQuery}
@@ -488,6 +499,7 @@ export default function AdminDashboard() {
                 <tr>
                   <th style={{ width: 100 }}>Ordem</th>
                   <th>Nome Completo</th>
+                  <th>E-mail</th>
                   <th>Ano Escolar</th>
                   <th>Turma</th>
                   <th>Telefone</th>
@@ -516,6 +528,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ fontWeight: 600 }}>{reg.full_name}</td>
+                      <td style={{ color: "var(--text-secondary)" }}>{reg.email}</td>
                       <td style={{ color: "var(--text-secondary)" }}>{reg.school_year}</td>
                       <td>{reg.class_name}</td>
                       <td style={{ color: "var(--secondary)", fontFamily: "monospace" }}>{reg.phone}</td>

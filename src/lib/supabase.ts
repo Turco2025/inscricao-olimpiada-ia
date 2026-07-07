@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 export interface Registration {
   id?: number;
   full_name: string;
+  email: string;
   class_name: string;
   phone: string;
   school_year: string;
@@ -98,6 +99,11 @@ export const dbService = {
       if (isMockMode) {
         const list = getMockData<Registration[]>("olympiad_registrations") || [];
         
+        // Verifica se o email já existe (case-insensitive)
+        if (list.some(r => r.email && r.email.toLowerCase() === student.email.toLowerCase())) {
+          throw new Error("Este e-mail já está cadastrado!");
+        }
+
         const newReg: Registration = {
           id: list.length + 1,
           ...student,
@@ -106,6 +112,7 @@ export const dbService = {
         
         list.push(newReg);
         setMockData("olympiad_registrations", list);
+
         
         return {
           registration: newReg,

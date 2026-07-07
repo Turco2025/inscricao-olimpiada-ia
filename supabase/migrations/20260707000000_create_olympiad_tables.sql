@@ -4,11 +4,13 @@
 create table if not exists olympiad_registrations (
   id bigint primary key generated always as identity,
   full_name text not null,
+  email text unique not null,
   class_name text not null,
   phone text not null,
   school_year text not null,
   created_at timestamp with time zone default now()
 );
+
 
 -- Tabela de Configurações do Sistema
 create table if not exists olympiad_settings (

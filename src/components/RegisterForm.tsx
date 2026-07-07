@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { dbService, isMockMode } from "../lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import { BrainCircuit, CheckCircle, Clock, AlertTriangle, ShieldCheck, User, Users, Phone, Calendar } from "lucide-react";
+import { BrainCircuit, CheckCircle, Clock, AlertTriangle, ShieldCheck, User, Users, Phone, Calendar, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm() {
@@ -14,6 +14,7 @@ export default function RegisterForm() {
   
   // Form State
   const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [className, setClassName] = useState("");
   const [phone, setPhone] = useState("");
   const [schoolYear, setSchoolYear] = useState("");
@@ -51,8 +52,15 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !className.trim() || !phone.trim() || !schoolYear) {
+    if (!fullName.trim() || !email.trim() || !className.trim() || !phone.trim() || !schoolYear) {
       setErrorMessage("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setErrorMessage("Por favor, insira um e-mail válido.");
       return;
     }
 
@@ -62,13 +70,30 @@ export default function RegisterForm() {
     try {
       const response = await dbService.registrations.create({
         full_name: fullName.trim(),
+        email: email.trim().toLowerCase(),
         class_name: className.trim(),
         phone: phone.trim(),
         school_year: schoolYear,
       });
+      
       setRegisteredOrder(response.order);
+      // Limpa os campos do formulário
+      setFullName("");
+      setEmail("");
+      setClassName("");
+      setPhone("");
+      setSchoolYear("");
     } catch (err: any) {
-      setErrorMessage(err.message || "Ocorreu um erro ao realizar a inscrição. Tente novamente.");
+      if (
+        err.code === "23505" || 
+        err.message?.includes("duplicate key") || 
+        err.message?.includes("already exists") ||
+        err.message?.includes("já está cadastrado")
+      ) {
+        setErrorMessage("Este e-mail já está cadastrado para a Olimpíada!");
+      } else {
+        setErrorMessage(err.message || "Ocorreu um erro ao realizar a inscrição. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -215,6 +240,24 @@ export default function RegisterForm() {
                 placeholder="Ex: Amanda Silva Oliveira"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            {/* E-mail */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
+                <Mail size={14} style={{ marginRight: 6, verticalAlign: "middle" }} />
+                E-mail (Único)
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                placeholder="Ex: amanda@escola.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />
