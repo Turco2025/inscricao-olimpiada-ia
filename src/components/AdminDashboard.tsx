@@ -123,25 +123,31 @@ export default function AdminDashboard() {
     doc.rect(0, 42, pageWidth, 1.5, "F");
 
     // Título Principal
+    let yHeader = 15;
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.text("OLIMPÍADA DE INTELIGÊNCIA ARTIFICIAL 2026", margin, y);
-    y += 8;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.setTextColor(148, 163, 184); // Cinza Secundário
-    doc.text("Relatório Oficial de Alunos Inscritos por Ordem Cronológica", margin, y);
+    doc.setFontSize(16); // Reduzido de 20 para 16 para garantir que caiba no limite horizontal
+    doc.text("OLIMPÍADA DE INTELIGÊNCIA ARTIFICIAL 2026", margin, yHeader);
     
-    // Status e Metadados
+    // Subtítulo
+    yHeader += 7;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184); // Cinza Secundário
+    doc.text("Relatório Oficial de Alunos Inscritos por Ordem Cronológica", margin, yHeader);
+    
+    // Status e Metadados (Posicionados abaixo do subtítulo para evitar colisões)
+    yHeader += 6;
     const today = new Date().toLocaleString("pt-BR");
-    doc.setFontSize(9);
-    doc.setTextColor(255, 255, 255);
-    doc.text(`Data de Emissão: ${today}`, pageWidth - margin - 55, y - 8);
-    doc.text(`Status: ${isOpen ? "EM ABERTO" : "ENCERRADAS"}`, pageWidth - margin - 55, y - 3);
+    doc.setFontSize(8.5);
+    doc.setTextColor(203, 213, 225);
+    doc.text(`Data de Emissão: ${today}`, margin, yHeader);
+    
+    yHeader += 5;
+    doc.text(`Status das Inscrições: ${isOpen ? "EM ABERTO" : "ENCERRADAS"}`, margin, yHeader);
 
     y = 55; // Ajusta y para o início do conteúdo da página
+
 
     // Informações Estatísticas Rápidas
     doc.setTextColor(13, 10, 28);
