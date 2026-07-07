@@ -434,9 +434,9 @@ export default function AdminDashboard() {
               onClick={handleClearAll}
               disabled={actionLoading || registrations.length === 0}
               className="btn btn-secondary"
-              style={{ padding: "6px 12px", fontSize: "0.78rem", border: "1px solid rgba(239, 68, 68, 0.3)", color: "#ef4444", display: "inline-flex", gap: 6, alignItems: "center" }}
+              style={{ padding: "10px 18px", fontSize: "0.92rem", border: "1px solid rgba(239, 68, 68, 0.4)", color: "#ef4444", display: "inline-flex", gap: 8, alignItems: "center", marginTop: 4 }}
             >
-              <Trash2 size={13} />
+              <Trash2 size={16} />
               Resetar Tudo
             </button>
           </div>
