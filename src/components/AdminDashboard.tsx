@@ -104,13 +104,13 @@ export default function AdminDashboard() {
   // Função para Gerar o PDF Oficial em formato elegante
   const generatePDF = () => {
     const doc = new jsPDF({
-      orientation: "portrait",
+      orientation: "landscape",
       unit: "mm",
       format: "a4"
     });
 
-    const pageHeight = 297;
-    const pageWidth = 210;
+    const pageHeight = 210;
+    const pageWidth = 297;
     const margin = 15;
     let y = 20;
 
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
     let yHeader = 15;
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16); // Reduzido de 20 para 16 para garantir que caiba no limite horizontal
+    doc.setFontSize(18); // Voltado para 18 pois na horizontal (landscape) há espaço de sobra
     doc.text("OLIMPÍADA DE INTELIGÊNCIA ARTIFICIAL 2026", margin, yHeader);
     
     // Subtítulo
@@ -170,14 +170,14 @@ export default function AdminDashboard() {
     doc.setFontSize(9);
     doc.setTextColor(51, 65, 85);
     
-    // Posições das Colunas no PDF (Ajustadas para caber a Data/Hora)
-    const colOrder = margin + 1;
-    const colName = margin + 12;
-    const colEmail = margin + 55;
-    const colYear = margin + 93;
-    const colClass = margin + 120;
-    const colPhone = margin + 132;
-    const colDateTime = margin + 155;
+    // Posições das Colunas no PDF (Horizontal / Landscape - Espaço Expandido)
+    const colOrder = margin + 2;       // 17
+    const colName = margin + 15;       // 30 (largura disponível: 70mm)
+    const colEmail = margin + 85;      // 100 (largura disponível: 65mm)
+    const colYear = margin + 150;      // 165 (largura disponível: 45mm)
+    const colClass = margin + 195;     // 210 (largura disponível: 18mm)
+    const colPhone = margin + 213;     // 228 (largura disponível: 27mm)
+    const colDateTime = margin + 240;  // 255 (largura disponível: 27mm)
 
     doc.text("Ordem", colOrder, y + 5.5);
     doc.text("Nome Completo", colName, y + 5.5);
@@ -250,24 +250,24 @@ export default function AdminDashboard() {
       doc.text(orderStr, colOrder, y + 5);
       doc.setFont("helvetica", "normal");
 
-      // Trunca nomes muito longos para caber no PDF
+      // Trunca nomes muito longos para caber no PDF (Limites maiores na horizontal)
       let nameText = reg.full_name;
-      if (nameText.length > 22) {
-        nameText = nameText.substring(0, 19) + "...";
+      if (nameText.length > 38) {
+        nameText = nameText.substring(0, 35) + "...";
       }
 
       doc.text(nameText, colName, y + 5);
 
-      // Trunca emails muito longos
+      // Trunca emails muito longos (Limites maiores na horizontal)
       let emailText = reg.email || "";
-      if (emailText.length > 20) {
-        emailText = emailText.substring(0, 17) + "...";
+      if (emailText.length > 32) {
+        emailText = emailText.substring(0, 29) + "...";
       }
       doc.text(emailText, colEmail, y + 5);
       
       let yearText = reg.school_year;
-      if (yearText.length > 16) {
-        yearText = yearText.substring(0, 13) + "...";
+      if (yearText.length > 25) {
+        yearText = yearText.substring(0, 22) + "...";
       }
       doc.text(yearText, colYear, y + 5);
       doc.text(reg.class_name, colClass, y + 5);
