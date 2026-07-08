@@ -269,15 +269,9 @@ export default function AdminDashboard() {
       doc.text(reg.class_name, colClass, y + 5);
       doc.text(reg.phone, colPhone, y + 5);
 
-      // Formata data e hora da inscrição de forma compacta (ex: DD/MM/AA, HH:MM)
+      // Formata data e hora da inscrição de forma idêntica à listagem da tela
       const formattedDate = reg.created_at
-        ? new Date(reg.created_at).toLocaleString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit"
-          })
+        ? new Date(reg.created_at).toLocaleString("pt-BR")
         : "-";
       doc.text(formattedDate, colDateTime, y + 5);
 
@@ -303,8 +297,12 @@ export default function AdminDashboard() {
     doc.text(`Fim do relatório. Total de alunos listados: ${filteredRegistrations.length}.`, margin, y);
     doc.text("Este documento lista inscrições válidas e oficiais no sistema eletrônico da Olimpíada de IA.", margin, y + 4);
 
-    // Salva o PDF com o nome correspondente
-    const dateFormatted = new Date().toISOString().slice(0, 10);
+    // Salva o PDF com o nome correspondente usando a data local
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateFormatted = `${year}-${month}-${day}`;
     doc.save(`Inscritos_Olimpiada_IA_${dateFormatted}.pdf`);
   };
 
