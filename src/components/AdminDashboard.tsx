@@ -166,14 +166,14 @@ export default function AdminDashboard() {
     doc.setFontSize(9);
     doc.setTextColor(51, 65, 85);
     
-    // Posições das Colunas no PDF (Horizontal / Landscape - Espaço Otimizado)
-    const colOrder = margin + 2;       // 17
-    const colName = margin + 12;       // 27 (largura disponível: 38mm)
-    const colEmail = margin + 50;      // 65 (largura disponível: 55mm)
-    const colYear = margin + 105;      // 120 (largura disponível: 50mm)
-    const colClass = margin + 155;     // 170 (largura disponível: 25mm)
-    const colPhone = margin + 180;     // 195 (largura disponível: 45mm)
-    const colDateTime = margin + 225;  // 240 (largura disponível: 42mm)
+    // Posições das Colunas no PDF (Horizontal / Landscape - Espaço Otimizado e Sem Truncamento)
+    const colOrder = margin + 1;       // 16
+    const colName = margin + 10;       // 25
+    const colEmail = margin + 74;      // 89
+    const colYear = margin + 141;      // 156
+    const colClass = margin + 187;     // 202
+    const colPhone = margin + 207;     // 222
+    const colDateTime = margin + 234;  // 249
 
     doc.text("Ordem", colOrder, y + 5.5);
     doc.text("Nome Completo", colName, y + 5.5);
@@ -190,8 +190,40 @@ export default function AdminDashboard() {
     doc.setFontSize(9);
 
     filteredRegistrations.forEach((reg, index) => {
+      const formattedDate = reg.created_at
+        ? new Date(reg.created_at).toLocaleString("pt-BR")
+        : "-";
+
+      // Obter as linhas de texto para colunas que podem quebrar linha (evitando truncamento)
+      const nameText = reg.full_name || "";
+      const emailText = reg.email || "";
+      const yearText = reg.school_year || "";
+      const classText = reg.class_name || "";
+      const phoneText = reg.phone || "";
+      const dateTimeText = formattedDate || "";
+
+      const nameLines = doc.splitTextToSize(nameText, 62);
+      const emailLines = doc.splitTextToSize(emailText, 65);
+      const yearLines = doc.splitTextToSize(yearText, 44);
+      const classLines = doc.splitTextToSize(classText, 18);
+      const phoneLines = doc.splitTextToSize(phoneText, 26);
+      const dateTimeLines = doc.splitTextToSize(dateTimeText, 33);
+
+      // Calcula a altura necessária para a linha (baseado no maior número de linhas de texto)
+      const maxLines = Math.max(
+        nameLines.length,
+        emailLines.length,
+        yearLines.length,
+        classLines.length,
+        phoneLines.length,
+        dateTimeLines.length,
+        1
+      );
+      
+      const rowHeight = Math.max(maxLines * 4.5 + 3, 7.5);
+
       // Verifica se a linha vai ultrapassar o limite inferior da folha A4
-      if (y > pageHeight - margin - 10) {
+      if (y + rowHeight > pageHeight - margin - 10) {
         doc.addPage();
         y = 20;
 
@@ -230,13 +262,13 @@ export default function AdminDashboard() {
       // Zebra striping (fundo cinza claro para linhas pares)
       if (index % 2 === 1) {
         doc.setFillColor(248, 250, 252);
-        doc.rect(margin, y, pageWidth - (margin * 2), 7.5, "F");
+        doc.rect(margin, y, pageWidth - (margin * 2), rowHeight, "F");
       }
 
       // Desenha borda inferior sutil
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.1);
-      doc.line(margin, y + 7.5, pageWidth - margin, y + 7.5);
+      doc.line(margin, y + rowHeight, pageWidth - margin, y + rowHeight);
 
       doc.setTextColor(15, 23, 42);
       
@@ -246,36 +278,15 @@ export default function AdminDashboard() {
       doc.text(orderStr, colOrder, y + 5);
       doc.setFont("helvetica", "normal");
 
-      // Trunca nomes muito longos para caber no PDF
-      let nameText = reg.full_name;
-      if (nameText.length > 22) {
-        nameText = nameText.substring(0, 19) + "...";
-      }
+      // Desenha textos (quebrando linha automaticamente onde necessário)
+      doc.text(nameLines, colName, y + 5);
+      doc.text(emailLines, colEmail, y + 5);
+      doc.text(yearLines, colYear, y + 5);
+      doc.text(classLines, colClass, y + 5);
+      doc.text(phoneLines, colPhone, y + 5);
+      doc.text(dateTimeLines, colDateTime, y + 5);
 
-      doc.text(nameText, colName, y + 5);
-
-      // Trunca emails muito longos
-      let emailText = reg.email || "";
-      if (emailText.length > 30) {
-        emailText = emailText.substring(0, 27) + "...";
-      }
-      doc.text(emailText, colEmail, y + 5);
-      
-      let yearText = reg.school_year;
-      if (yearText.length > 26) {
-        yearText = yearText.substring(0, 23) + "...";
-      }
-      doc.text(yearText, colYear, y + 5);
-      doc.text(reg.class_name, colClass, y + 5);
-      doc.text(reg.phone, colPhone, y + 5);
-
-      // Formata data e hora da inscrição de forma idêntica à listagem da tela
-      const formattedDate = reg.created_at
-        ? new Date(reg.created_at).toLocaleString("pt-BR")
-        : "-";
-      doc.text(formattedDate, colDateTime, y + 5);
-
-      y += 7.5;
+      y += rowHeight;
     });
 
     // Rodapé de Conclusão de Relatório
